@@ -20,23 +20,22 @@ uniform_real_distribution<float> distribution(0.0, 1.0);
 
 float threshold(int n, int dim)
 {
-  // Calculate the threshold based on n and dim
-  float thres = 1.0;
 
   if (dim == 0){
-    if (n < 1000){
-      return pow(1.951 * n, -0.65);
-    }
-    else {
-      return pow(5.994 * n, -0.718);
+    // if (n < 1000){
+    //   return pow(1.951 * n, -0.65);
+    // }
+    if (n > 1000) {
+      return pow(6.994 * n, -0.418);
     }
   }
   else if (dim == 2){
-    if (n < 1000)
-    {
-      return pow(7.1 * n, -0.201);
-    }
-    else
+    // if (n < 1000)
+    // {
+    //   return pow(7.1 * n, -0.201);
+    // }
+
+    if (n > 1000)
     {
       return pow(1.131 * n, -0.391);
     }
@@ -51,7 +50,6 @@ float threshold(int n, int dim)
     {
       return pow(1.827 * n, -0.25);
     }
-    return 1;
   }
   else if (dim == 4)
   {
@@ -61,13 +59,13 @@ float threshold(int n, int dim)
     // }
     if (n > 1000)
     {
-      return pow(1.7 * n, -0.22);
+      return pow(1.75 * n, -0.22);
     }
-    return 1;
   }
   else {
     return -1;
   }
+  return 1;
 };
 
 class BinaryHeap
