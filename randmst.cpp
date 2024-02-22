@@ -25,43 +25,45 @@ float threshold(int n, int dim)
 
   if (dim == 0){
     if (n < 1000){
-      return pow(1.351 * n, -0.692);
+      return pow(1.951 * n, -0.65);
     }
     else {
-      return pow(5.294 * n, -0.918);
+      return pow(5.994 * n, -0.718);
     }
   }
   else if (dim == 2){
     if (n < 1000)
     {
-      return pow(6.839 * n, -0.701);
+      return pow(7.1 * n, -0.201);
     }
     else
     {
-      return pow(1.031 * n, -0.401);
+      return pow(1.131 * n, -0.391);
     }
   }
   else if (dim == 3)
   {
-    if (n < 1000)
+    // if (n < 1000)
+    // {
+    //   return pow(1.228 * n, -0.296);
+    // }
+    if (n > 1000)
     {
-      return pow(1.228 * n, -0.296);
+      return pow(1.827 * n, -0.25);
     }
-    else
-    {
-      return pow(1.827 * n, -0.352);
-    }
+    return 1;
   }
   else if (dim == 4)
   {
-    if (n < 1000)
-    {
-      return pow(1.45 * n, -0.246);
-    }
-    else
+    // if (n < 1000)
+    // {
+    //   return pow(1.45 * n, -0.246);
+    // }
+    if (n > 1000)
     {
       return pow(1.7 * n, -0.22);
     }
+    return 1;
   }
   else {
     return -1;
@@ -314,7 +316,11 @@ double prim(vector<vector<pair<float, int>>> adj, int n)
 
 int main(int argc, char **argv)
 {
+
+  // auto start = high_resolution_clock::now();
+
   // stoi is string to int
+  int test = stoi(argv[1]);
 
   int n = stoi(argv[2]);
   int trials = stoi(argv[3]);
@@ -323,16 +329,40 @@ int main(int argc, char **argv)
   float sum = 0.;
   float cutoff = 0.1;
 
-  float largestEdge = 0.0; // Variable to store the largest edge
+  if (test == 1)
+  {
+    int arr[12] = {128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144};
+    int dims[4] = {0, 2, 3, 4};
+    for (int i = 0; i < 10; i++)
+    {
+      for (int j = 0; j < 4; j++)
+      {
+        auto start = high_resolution_clock::now();
+        sum = 0;
+        cout << "Nodes: " << arr[i] << " Dim: " << dims[j] << " ";
+        for (int k = 0; k < trials; k++)
+        {
+          vector<vector<pair<float, int>>> adj = make_graph(arr[i], dims[j]);
+          sum += prim(adj, arr[i]);
+        }
+        float average = sum / trials;
+        auto end = high_resolution_clock::now();
+        auto duration = duration_cast<milliseconds>(end - start);
 
+        cout << "MST: " << average << " Time: " << duration.count() / 1000.0 << endl;
+      }
+    }
+    return 0;
+  }
   for (int i = 0; i < trials; i++)
   {
+
     vector<vector<pair<float, int>>> adj = make_graph(n, dim);
     // Run the algorithm
-    sum += prim(adj, n);  }
+    sum += prim(adj, n);
+  }
   float average = sum / trials;
 
   cout << average << " " << n << " " << trials << " " << dim << endl;
-  // cout << "Largest edge found: " << largestEdge << endl; // Print the largest edge
   return 0;
 }
