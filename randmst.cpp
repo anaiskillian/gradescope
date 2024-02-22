@@ -59,7 +59,7 @@ float threshold(int n, int dim)
     // }
     if (n > 1000)
     {
-      return pow(1.75 * n, -0.22);
+      return pow(1.75 * n, -0.2);
     }
   }
   else {
