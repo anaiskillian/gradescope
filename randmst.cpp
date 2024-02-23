@@ -16,24 +16,18 @@ using namespace std::chrono;
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 uniform_real_distribution<float> distribution(0.0, 1.0);
-// distribution(rng) returns a random number between 0 and 1
 
+// float threshold(int n, int dim)
+//    Determines what the cutoff should be to prune edges in our graph
+//    Is based on n (the number of nodes) and dim (the number of dimensions).
 float threshold(int n, int dim)
 {
-
   if (dim == 0){
-    // if (n < 1000){
-    //   return pow(1.951 * n, -0.65);
-    // }
     if (n > 1000) {
       return pow(6.994 * n, -0.418);
     }
   }
   else if (dim == 2){
-    // if (n < 1000)
-    // {
-    //   return pow(7.1 * n, -0.201);
-    // }
 
     if (n > 1000)
     {
@@ -42,10 +36,6 @@ float threshold(int n, int dim)
   }
   else if (dim == 3)
   {
-    // if (n < 1000)
-    // {
-    //   return pow(1.228 * n, -0.296);
-    // }
     if (n > 1000)
     {
       return pow(1.827 * n, -0.25);
@@ -53,10 +43,6 @@ float threshold(int n, int dim)
   }
   else if (dim == 4)
   {
-    // if (n < 1000)
-    // {
-    //   return pow(1.45 * n, -0.246);
-    // }
     if (n > 2000)
     {
       return pow(1.9 * n, -0.2);
@@ -68,6 +54,12 @@ float threshold(int n, int dim)
   return 1;
 };
 
+// class BinaryHeap
+//    Creates the binary heap used for our prim's algorithm.
+//    The key at each node is less than or equal to the keys of its children.
+//    Uses a vector to store the heap.
+//    Supports operations like insertion, extraction of the minimum element, 
+//    and checking emptiness.
 class BinaryHeap
 {
 private:
@@ -76,16 +68,18 @@ private:
   int size = 0;
 
 public:
+  // initialize empty heap
   BinaryHeap() : capacity(0), size(0) {}
 
+  // check if heap is empty
   bool empty() const
   {
     return size == 0;
   }
 
+  // insert an element into the heap.
   void insert(const tuple<float, int> &val)
   {
-
     heap.push_back(val);
     size++;
     int i = size - 1;
@@ -96,17 +90,18 @@ public:
     }
   }
 
+  // get the minimum element in the heap without removing it
   tuple<float, int> &peek()
   {
     return heap[0];
   }
 
+  // extract the minimum element from the heap
   tuple<float, int> extractMin()
   {
     if (size == 0)
     {
       cout << "Heap is empty" << endl;
-      // Return a default value or throw an exception
       throw runtime_error("Heap is empty");
     }
     tuple<float, int> root = heap[0];
@@ -114,10 +109,10 @@ public:
     heap[0] = heap[size - 1];
     size--;
     minHeapify(0);
-
     return root;
   }
 
+  // debugging function, print the elements of the heap.
   void printHeap()
   {
     for (int i = 0; i < size + 1; i++)
@@ -128,11 +123,13 @@ public:
   }
 
 private:
+  // get the index of the parent of a node.
   int parent(int i) const
   {
     return (i - 1) / 2;
   }
 
+  // perform min-heapify operation starting from a given index.
   void minHeapify(int i)
   {
     int l = leftChild(i);
@@ -153,17 +150,33 @@ private:
     }
   }
 
+  // get the index of the left child of a node
   int leftChild(int i) const
   {
     return 2 * i + 1;
   }
 
+  // get the index of the right child of a node
   int rightChild(int i) const
   {
     return 2 * i + 2;
   }
 };
 
+// float pow(float x, int y)
+//     Used to speed up the exponentiation in our calculations
+float pow(float x, int y)
+{
+  float result = 1;
+  for (int i = 0; i < y; i++)
+  {
+    result *= x;
+  }
+  return result;
+}
+
+// vector<vector<pair<float, int>>> make_graph(int n, int dim)
+//    generates a graph represented as an adjacency list based on nodes and dim
 vector<vector<pair<float, int>>> make_graph(int n, int dim)
 {
   // pair <int, float> is an edge
@@ -174,7 +187,7 @@ vector<vector<pair<float, int>>> make_graph(int n, int dim)
 
   // holds the dimensions in an array of correct size
   vector<vector<float>> coordinates(n, vector<float>(dim));
-  float cutoff = threshold(n, dim); // Calculate threshold
+  float cutoff = threshold(n, dim); // calculate threshold
 
   if (dim == 0)
   {
@@ -185,7 +198,7 @@ vector<vector<pair<float, int>>> make_graph(int n, int dim)
         float w = distribution(rng);
         if (w > cutoff)
         {
-          continue; // Skip edges greater than threshold
+          continue; // skip edges greater than threshold
         }
         adj[i].push_back(make_pair(w, j));
         adj[j].push_back(make_pair(w, i));
@@ -206,7 +219,7 @@ vector<vector<pair<float, int>>> make_graph(int n, int dim)
         float w = sqrt(pow(coordinates[i][0] - coordinates[j][0], 2) + pow(coordinates[i][1] - coordinates[j][1], 2));
         if (w > cutoff)
         {
-          continue; // Skip edges greater than threshold
+          continue; // skip edges greater than threshold
         }
         adj[i].push_back(make_pair(w, j));
         adj[j].push_back(make_pair(w, i));
@@ -229,7 +242,7 @@ vector<vector<pair<float, int>>> make_graph(int n, int dim)
         float w = sqrt(pow(coordinates[i][0] - coordinates[j][0], 2) + pow(coordinates[i][1] - coordinates[j][1], 2) + pow(coordinates[i][2] - coordinates[j][2], 2));
         if (w > cutoff)
         {
-          continue; // Skip edges greater than threshold
+          continue; // skip edges greater than threshold
         }
         adj[i].push_back(make_pair(w, j));
         adj[j].push_back(make_pair(w, i));
@@ -253,7 +266,7 @@ vector<vector<pair<float, int>>> make_graph(int n, int dim)
         float w = sqrt(pow(coordinates[i][0] - coordinates[j][0], 2) + pow(coordinates[i][1] - coordinates[j][1], 2) + pow(coordinates[i][2] - coordinates[j][2], 2) + pow(coordinates[i][3] - coordinates[j][3], 2));
         if (w > cutoff)
         {
-          continue; // Skip edges greater than threshold
+          continue; // skip edges greater than threshold
         }
         adj[i].push_back(make_pair(w, j));
         adj[j].push_back(make_pair(w, i));
@@ -263,15 +276,14 @@ vector<vector<pair<float, int>>> make_graph(int n, int dim)
   return adj;
 }
 
-double prim(vector<vector<pair<float, int>>> adj, int n)
+// double prim(vector<vector<pair<float, int>>> adj, int n)
+//    finds the minimum spanning tree weight of a graph using Prim's algorithm
+double prim(vector<vector<pair<float, int>>> adj, int n, int counter = 0)
 {
   BinaryHeap heap;
   vector<float> dist(n, 1e9);
   vector<bool> visited(n, false);
   double totalWeight = 0.0;
-  int counter = 0;
-  //  Start from vertex 0
-
   visited[0] = true;
   dist[0] = 0;
 
@@ -291,12 +303,11 @@ double prim(vector<vector<pair<float, int>>> adj, int n)
 
     if (visited[to])
       continue;
-    // Include the edge in MST
+    // include the edge in MST
     totalWeight += minWeight;
-
+    counter++;
     visited[to] = true;
-
-    // Add adjacent vertices to the priority queue
+    // add adjacent vertices to the priority queue
     for (const auto &edge : adj[to])
     {
       int new_to = get<1>(edge);
@@ -308,15 +319,14 @@ double prim(vector<vector<pair<float, int>>> adj, int n)
       }
     }
   }
-
+  if (counter < n - 1){
+    totalWeight = prim(adj, n);
+  }
   return totalWeight;
 }
 
 int main(int argc, char **argv)
 {
-
-  // auto start = high_resolution_clock::now();
-
   // stoi is string to int
   int test = stoi(argv[1]);
 
@@ -327,40 +337,41 @@ int main(int argc, char **argv)
   float sum = 0.;
   float cutoff = 0.1;
 
-  if (test == 1)
-  {
-    int arr[12] = {128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144};
-    int dims[4] = {0, 2, 3, 4};
-    for (int i = 0; i < 10; i++)
-    {
-      for (int j = 0; j < 4; j++)
-      {
-        auto start = high_resolution_clock::now();
-        sum = 0;
-        cout << "Nodes: " << arr[i] << " Dim: " << dims[j] << " ";
-        for (int k = 0; k < trials; k++)
-        {
-          vector<vector<pair<float, int>>> adj = make_graph(arr[i], dims[j]);
-          sum += prim(adj, arr[i]);
-        }
-        float average = sum / trials;
-        auto end = high_resolution_clock::now();
-        auto duration = duration_cast<milliseconds>(end - start);
+  // code that was used to print the result for each dimension
 
-        cout << "MST: " << average << " Time: " << duration.count() / 1000.0 << endl;
-      }
-    }
-    return 0;
-  }
+  // if (test == 1)
+  // {
+  //   int arr[1] = {262144};
+  //   int dims[4] = {0, 2, 3, 4};
+  //   for (int i = 0; i < 10; i++)
+  //   {
+  //     for (int j = 0; j < 4; j++)
+  //     {
+  //       auto start = high_resolution_clock::now();
+  //       sum = 0;
+  //       cout << "Nodes: " << arr[i] << " Dim: " << dims[j] << " ";
+  //       for (int k = 0; k < trials; k++)
+  //       {
+  //         vector<vector<pair<float, int>>> adj = make_graph(arr[i], dims[j]);
+  //         sum += prim(adj, arr[i]);
+  //       }
+  //       float average = sum / trials;
+  //       auto end = high_resolution_clock::now();
+  //       auto duration = duration_cast<milliseconds>(end - start);
+
+  //       cout << "MST: " << average << " Time: " << duration.count() / 1000.0 << endl;
+  //     }
+  //   }
+  //   return 0;
+  // }
   for (int i = 0; i < trials; i++)
   {
 
     vector<vector<pair<float, int>>> adj = make_graph(n, dim);
-    // Run the algorithm
+    // fun the algorithm
     sum += prim(adj, n);
   }
   float average = sum / trials;
-
   cout << average << " " << n << " " << trials << " " << dim << endl;
   return 0;
 }
