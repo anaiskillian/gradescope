@@ -278,7 +278,7 @@ vector<vector<pair<float, int>>> make_graph(int n, int dim)
 
 // double prim(vector<vector<pair<float, int>>> adj, int n)
 //    finds the minimum spanning tree weight of a graph using Prim's algorithm
-double prim(vector<vector<pair<float, int>>> adj, int n, int counter = 0)
+double prim(vector<vector<pair<float, int>>> adj, int n)
 {
   BinaryHeap heap;
   vector<float> dist(n, 1e9);
@@ -305,7 +305,6 @@ double prim(vector<vector<pair<float, int>>> adj, int n, int counter = 0)
       continue;
     // include the edge in MST
     totalWeight += minWeight;
-    counter++;
     visited[to] = true;
     // add adjacent vertices to the priority queue
     for (const auto &edge : adj[to])
@@ -318,9 +317,6 @@ double prim(vector<vector<pair<float, int>>> adj, int n, int counter = 0)
         heap.insert(edge);
       }
     }
-  }
-  if (counter < n - 1){
-    totalWeight = prim(adj, n);
   }
   return totalWeight;
 }
